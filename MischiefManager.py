@@ -6,6 +6,8 @@ import os
 from datetime import datetime, timezone
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from flask import Flask
+import threading
 
 DISCORD_TOKEN       = os.getenv("DISCORD_TOKEN")
 WEBHOOK_START       = os.getenv("WEBHOOK_START")
@@ -16,6 +18,22 @@ AZURE_CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
 AZURE_SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID")
 RESOURCE_GROUP      = os.getenv("RESOURCE_GROUP")
 VM_NAME             = os.getenv("VM_NAME")
+
+# ============================================================
+# FLASK KEEPALIVE
+# ============================================================
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "✅ Discord bot is alive and kicking!"
+
+# Function to run Flask in a background thread
+def run_flask():
+    app.run(host='0.0.0.0', port=8080)
+
+# Start the Flask web server in another thread
+threading.Thread(target=run_flask, daemon=True).start()
 
 # ============================================================
 # BOT INITIALISATION
